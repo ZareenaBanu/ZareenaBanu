@@ -14,22 +14,15 @@ import com.microsoft.playwright.Playwright;
 import com.opencsv.exceptions.CsvValidationException;
 
 
-public class WebKitScreenshot {
+public class ReadABDataUploadInSMS {
   public static void main(String[] args) throws IOException, InterruptedException, CsvValidationException  {
    
-    String _credsCsv="E:\\TJ\\Auto\\creds.csv";
-    String _inputFileCsv="E:\\TJ\\Auto\\InputFile.csv";
+    String _credsCsv="C:\\Users\\P128DEF\\OneDrive - Ceridian HCM Inc\\MyFolder\\Zar-Per\\TJ\\Auto\\creds.csv";
+    String _inputFileCsv="C:\\Users\\P128DEF\\OneDrive - Ceridian HCM Inc\\MyFolder\\Zar-Per\\TJ\\Auto\\InputFile.csv";
 
-    String _propUrlWNWH="";//Read from _credsCsv File
     String _propUsernameWNWH="";
     String _propPasswordWNWH="";
     String _propReloadUrlWNWH="";
-    String _propReloadUrlJohn="";
-    String _propUsernameJohn="";
-    String _propPasswordJohn="";
-    String _propUrlCompany ="";//Read from _credsCsv File
-    String _propUsernameCompany ="";
-    String _propPasswordCompany ="";
     String _propReloadUrlCompany="";    
     String _destinationCSVFolder="";
     String _smsUrl="";
@@ -53,30 +46,15 @@ public class WebKitScreenshot {
       while ((tempStr=reader.readLine()) != null) {
              lineInArray = tempStr.split(",");	  
 	     switch (lineInArray[0]) {	 
-          case "_propUrlWNWH":
-          _propUrlWNWH=lineInArray[1];
-          break;
-
-          case "_propUsernameWNWH":
+          
+        case "_propUsernameWNWH":
           _propUsernameWNWH=lineInArray[1];
           break;
 
           case "_propPasswordWNWH":
           _propPasswordWNWH=lineInArray[1];
           break;     
-                         
-          case "_propReloadUrlJohn":
-          _propReloadUrlJohn=lineInArray[1];
-          break;
-
-          case "_propUsernameJohn":
-          _propUsernameJohn=lineInArray[1];
-          break;
-
-          case "_propPasswordJohn":
-          _propPasswordJohn=lineInArray[1];
-          break;
-    
+           
           case "_destinationCSVFolder":
           _destinationCSVFolder=lineInArray[1];
           break;
@@ -102,19 +80,7 @@ public class WebKitScreenshot {
           case "_propReloadUrlWNWH":
           _propReloadUrlWNWH=lineInArray[1];
           break;
-    
-         case "_propUrlCompany":
-         _propUrlCompany=lineInArray[1];
-          break;
-
-          case "_propUsernameCompany":
-          _propUsernameCompany=lineInArray[1];
-          break;
-
-          case "_propPasswordCompany":
-          _propPasswordCompany=lineInArray[1];
-          break;
-    
+              
          case "_propReloadUrlCompany":
          _propReloadUrlCompany=lineInArray[1];
           break;         
@@ -135,19 +101,12 @@ public class WebKitScreenshot {
         page.route("**/*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());
     
         Browser browserWNWH =  chromium.launch(new BrowserType.LaunchOptions().setHeadless(false).setChannel("chrome").setTimeout(1200000).setExecutablePath(Paths.get("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe")));
-        BrowserContext contextWNWH = browserWNWH.newContext();  
-        
-        chromium.launch(new BrowserType.LaunchOptions().setHeadless(false).setChannel("chrome").setTimeout(1200000).setExecutablePath(Paths.get("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe")));
-        BrowserContext contextJohn = browserWNWH.newContext();  
-
-       
+        BrowserContext contextWNWH = browserWNWH.newContext();          
+            
         Page pageWNWHPage = contextWNWH.newPage(); 
         pageWNWHPage.route("**/*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());
 
-        Page pageJohnPage = contextJohn.newPage(); 
-        pageJohnPage.route("**/*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());
-
-        //For Tariq
+       //For Tariq
 
         pageWNWHPage.navigate(_propReloadUrlWNWH);  
         pageWNWHPage.click("text=Login"); // Interact with login form ptovide Username & Password
@@ -157,24 +116,11 @@ public class WebKitScreenshot {
         pageWNWHPage.waitForLoadState();
 
          
-//for John
-        pageJohnPage.navigate(_propReloadUrlJohn);  
-        pageJohnPage.click("text=Login"); // Interact with login form ptovide Username & Password
-        pageJohnPage.fill("input[name='_username']", _propUsernameJohn);
-        pageJohnPage.fill("input[name='_password']", _propPasswordJohn);
-        pageJohnPage.click("input[value='Login']");
-        pageJohnPage.waitForLoadState();
-
-        BrowserType firefox = playwright.firefox();
+     BrowserType firefox = playwright.firefox();
         BrowserContext context1 = firefox.launchPersistentContext(Paths.get(""),
           new BrowserType.LaunchPersistentContextOptions()
             .setTimeout(60000).setHeadless(false)
             .setIgnoreHTTPSErrors(true)  );
-
-      /*      BrowserContext contextCompany = firefox.launchPersistentContext(Paths.get(""),
-            new BrowserType.LaunchPersistentContextOptions()
-              .setTimeout(60000).setHeadless(false)
-              .setIgnoreHTTPSErrors(true)  ); */
 
          Page pagesms = context1.newPage();
          pagesms.route("**/*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());
@@ -220,10 +166,7 @@ public class WebKitScreenshot {
         _propReload=_propReloadUrlWNWH; 
          page=pageWNWHPage;     } 
 
-         else if (_ABOfficeUrl.equalsIgnoreCase("JOHN")){
-        _propReload=_propReloadUrlJohn; 
-         page=pageJohnPage;     } 
-            
+                  
         else 
          System.out.println("Do Nothing");
     
@@ -240,15 +183,11 @@ public class WebKitScreenshot {
         csvFilePropName="JOHN "+csvFilePropName; 
     
     String csvFileName = _destinationCSVFolder+csvFilePropName+".csv";  
-   
-      page.navigate(_propReload); 
-     //alert banner notification
-   //page.locator("xpath=/html/body/div[4]/div[1]/div/div[2]/p/a/i").click(); -older
-     // page.click("a[class='banner-close']");
+      page.navigate(_propReload);    
       Thread.sleep(3000);
       // Add suburb to Poperty Address
       _propertyNameSuburbGroup = _propertyName + ", " + _suburbGroup;
-      //newUI
+  
       page.click("span[class='unisearch-pro-label']"); //Click on Search Icon
       page.click("input[id='unisearch-pro-search']");
       page.fill("input[id='unisearch-pro-search']", _propertyNameSuburbGroup);
@@ -278,13 +217,9 @@ public class WebKitScreenshot {
         page.locator("xpath=/html/body/div[27]/div[1]/div[2]/div/div/form/div[2]/div[2]/div[3]/div[2]/div[1]/img").click();
         break;
 
-      }
-      
+      }     
       
          
-      String concatString= "text=" + _propertyNameSuburbGroup;
-     // page.click(concatString); //Click on Property Name
-
       switch (_typeofBuyers) {
 
         case "PB":
@@ -308,28 +243,15 @@ public class WebKitScreenshot {
       page.click("div[title='Print Contacts']"); //Print Contacts
       
       Page basicContactListPage ;
-      /*if (_ABOfficeUrl.equalsIgnoreCase("Company")){
-      basicContactListPage = contextCompany.waitForPage(() -> {
-         
-          }); /
-          
-         } 
-         
-         else */
+     
          if (_ABOfficeUrl.equalsIgnoreCase("WNWH")){
           basicContactListPage = contextWNWH.waitForPage(() -> {
             pageWNWHPage.click("text=Basic Contact/Call List");  });
             
            } 
 
-      else if (_ABOfficeUrl.equalsIgnoreCase("JOHN")){
-          basicContactListPage = contextJohn.waitForPage(() -> {
-            pageJohnPage.click("text=Basic Contact/Call List");  });
-            
-           } 
-
-      else 
-      basicContactListPage = context.newPage();
+        else 
+          basicContactListPage = context.newPage();
 
         
           
@@ -341,13 +263,9 @@ public class WebKitScreenshot {
        String headerList = "FirstName,Address,Number,Email,Home,Work,emailSubscription";                
        builder.append(headerList +"\n");
        String   records;
-      // 
-       // csvFilePropName="JOHN "+csvFilePropName; 
+      
         
-       if (_ABOfficeUrl.equalsIgnoreCase("JOHN"))
-        records = "John Irudayaraj,,0433969731,,,,\\n";
-       else
-        records = "Tariq Jameel,,0421250566,,,,\nZareena Banu,,0480120604,,,,\n";;    //  
+      records = "Tariq Jameel,,0421250566,,,,\nZareena Banu,,0480120604,,,,\n";;    
 
        com.microsoft.playwright.Locator locatortd=basicContactListPage.locator("td");         
        
@@ -469,7 +387,7 @@ public class WebKitScreenshot {
        }
        
       }
-      //////////////////////////////////// 
+      
    // SMS End*/ 
       
     }  
