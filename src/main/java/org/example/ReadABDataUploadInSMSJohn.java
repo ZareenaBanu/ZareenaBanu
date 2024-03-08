@@ -341,13 +341,13 @@ public class ReadABDataUploadInSMSJohn {
        String headerList = "FirstName,Address,Number,Email,Home,Work,emailSubscription";                
        builder.append(headerList +"\n");
        String   records;
-      // 
-       // csvFilePropName="JOHN "+csvFilePropName; 
+
+       records = "Tariq Jameel,,0421250566,,,,\nZareena Banu,,0480120604,,,,\n";;
         
-       if (_ABOfficeUrl.equalsIgnoreCase("JOHN"))
-        records = "John Irudayaraj,,0433969731,,,,\\n";
-       else
-        records = "Tariq Jameel,,0421250566,,,,\nZareena Banu,,0480120604,,,,\n";;    //  
+       //if (_ABOfficeUrl.equalsIgnoreCase("JOHN"))
+       // records = "John Irudayaraj,,0433969731,,,,\\n";       
+       //else
+       // records = "Tariq Jameel,,0421250566,,,,\nZareena Banu,,0480120604,,,,\n";;    //  
 
        com.microsoft.playwright.Locator locatortd=basicContactListPage.locator("td");         
        

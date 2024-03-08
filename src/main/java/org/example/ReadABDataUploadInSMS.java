@@ -109,6 +109,7 @@ public class ReadABDataUploadInSMS {
        //For Tariq
 
         pageWNWHPage.navigate(_propReloadUrlWNWH);  
+        Thread.sleep(3000);
         pageWNWHPage.click("text=Login"); // Interact with login form ptovide Username & Password
         pageWNWHPage.fill("input[name='_username']", _propUsernameWNWH);
         pageWNWHPage.fill("input[name='_password']", _propPasswordWNWH);
@@ -184,6 +185,9 @@ public class ReadABDataUploadInSMS {
     
     String csvFileName = _destinationCSVFolder+csvFilePropName+".csv";  
       page.navigate(_propReload);    
+                 //alert banner notification
+ //  page.locator("xpath=/html/body/div[4]/div[1]/div/div[2]/p/a/i").click(); 
+   //page.click("a[class='banner-close']");
       Thread.sleep(3000);
       // Add suburb to Poperty Address
       _propertyNameSuburbGroup = _propertyName + ", " + _suburbGroup;
@@ -349,9 +353,9 @@ public class ReadABDataUploadInSMS {
 
       pagesms.click("input[name='contactGroupsFilter']");
       pagesms.fill("input[name='contactGroupsFilter']", csvFilePropName);     
-      Thread.sleep(3000);   
+      Thread.sleep(5000);   
       pagesms.keyboard().press("Enter");  
-      Thread.sleep(3000);
+      Thread.sleep(5000);
       
       com.microsoft.playwright.Locator tdsmsCGSearch=pagesms.locator("td");       
             
