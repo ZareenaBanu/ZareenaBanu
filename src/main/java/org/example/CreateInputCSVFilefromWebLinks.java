@@ -25,6 +25,7 @@ public class CreateInputCSVFilefromWebLinks {
 		String records = "_propertyName,_typeOfAddress,_typeofBuyers,_suburbGroup,_ABOfficeUrl\n";
 		PrintWriter pw = null;
 		List<String> content;
+        
 		
 		try(Playwright playwright = Playwright.create()) {
 			 pw = new PrintWriter(file);
@@ -32,39 +33,44 @@ public class CreateInputCSVFilefromWebLinks {
 			 BrowserContext context2 = WebKit.launchPersistentContext(Paths.get(""), new BrowserType.LaunchPersistentContextOptions()
 			 .setTimeout(0).setHeadless(false) .setIgnoreHTTPSErrors(true)  );
 			 Page page = context2.newPage();
-			 StringBuilder builder = new StringBuilder();
-			     
-			content = Files.readAllLines(Paths.get(ipFilename));
+			 StringBuilder builder = new StringBuilder();         	
+ 			 content = Files.readAllLines(Paths.get(ipFilename));
+            
 
 			try {
 			for(int i = 1; i<content.size()-1; i++) {
 				
-				System.out.println("i="+i);				
 				String currentRow[] = content.get(i).split(",");		
-				System.out.println(currentRow[0]);
 				page.route("**/*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());
 	    	    page.navigate(currentRow[0],new Page.NavigateOptions().setWaitUntil(WaitUntilState.NETWORKIDLE).setTimeout(0));
-				System.out.println(page.title());
 				
-				String[] rec = page.title().split("-")[0].trim().split(",");
+				
+				//String[] rec = page.title().split("-")[0].trim().split(",");
+				String[] rec = page.title().trim().split(",");
+
+				System.out.println("\n\n"+currentRow[0]);
+				System.out.println(page.title());
+				System.out.println("Prpoerty: " +rec[0]+","+rec[1]);
+					
 	    	    if(currentRow[1].equals("PB")) {
 	    	    	records += rec[0] + "," + "Listings,PB," + rec[1].trim() + ",WNWH\n";
 	    	    }
-
+					
 	    	    if(currentRow[1].equals("MB")) {
+					
 	    	    	records += rec[0] + "," + "Listings,MB," + rec[1].trim() + ",WNWH\n";
 	    	    	records += rec[0] + "," + "Properties,MB," + rec[1].trim() + ",WNWH\n";
+					
 	    	    }
-
+					
 	    	    if(currentRow[1].equals("PBMB")) {
 	    	    	records += rec[0] + "," + "Listings,PB," + rec[1].trim() + ",WNWH\n";
 	    	    	records += rec[0] + "," + "Listings,MB," + rec[1].trim() + ",WNWH\n";
 	    	    	records += rec[0] + "," + "Properties,MB," + rec[1].trim() + ",WNWH\n";
 	    	    }
-
-				
-								
-			}
+											
+			
+		}
 			
 		}
 		finally{
@@ -82,4 +88,5 @@ public class CreateInputCSVFilefromWebLinks {
 	 
 
   }
+			
 }

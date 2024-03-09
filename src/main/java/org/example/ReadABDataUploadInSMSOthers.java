@@ -14,7 +14,7 @@ import com.microsoft.playwright.Playwright;
 import com.opencsv.exceptions.CsvValidationException;
 
 
-public class ReadABDataUploadInSMSJohn {
+public class ReadABDataUploadInSMSOthers {
   public static void main(String[] args) throws IOException, InterruptedException, CsvValidationException  {
    
     String _credsCsv="C:\\Users\\P128DEF\\OneDrive - Ceridian HCM Inc\\MyFolder\\Zar-Per\\TJ\\Auto\\creds.csv";
@@ -24,9 +24,6 @@ public class ReadABDataUploadInSMSJohn {
     String _propUsernameWNWH="";
     String _propPasswordWNWH="";
     String _propReloadUrlWNWH="";
-    String _propReloadUrlJohn="";
-    String _propUsernameJohn="";
-    String _propPasswordJohn="";
     String _propUrlCompany ="";//Read from _credsCsv File
     String _propUsernameCompany ="";
     String _propPasswordCompany ="";
@@ -43,9 +40,7 @@ public class ReadABDataUploadInSMSJohn {
     String _suburbGroup="";
     String _ABOfficeUrl="";
     
-   // try {
-
-     // FileWriter myWriter = new FileWriter(_outputLogFile);
+   
       
     try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(_credsCsv), "UTF8"))) {
       String[] lineInArray; 
@@ -64,19 +59,7 @@ public class ReadABDataUploadInSMSJohn {
           case "_propPasswordWNWH":
           _propPasswordWNWH=lineInArray[1];
           break;     
-                         
-          case "_propReloadUrlJohn":
-          _propReloadUrlJohn=lineInArray[1];
-          break;
-
-          case "_propUsernameJohn":
-          _propUsernameJohn=lineInArray[1];
-          break;
-
-          case "_propPasswordJohn":
-          _propPasswordJohn=lineInArray[1];
-          break;
-    
+             
           case "_destinationCSVFolder":
           _destinationCSVFolder=lineInArray[1];
           break;
@@ -144,9 +127,7 @@ public class ReadABDataUploadInSMSJohn {
         Page pageWNWHPage = contextWNWH.newPage(); 
         pageWNWHPage.route("**/*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());
 
-        Page pageJohnPage = contextJohn.newPage(); 
-        pageJohnPage.route("**/*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());
-
+       
         //For Tariq
 
         pageWNWHPage.navigate(_propReloadUrlWNWH);  
@@ -157,13 +138,6 @@ public class ReadABDataUploadInSMSJohn {
         pageWNWHPage.waitForLoadState();
 
          
-//for John
-        pageJohnPage.navigate(_propReloadUrlJohn);  
-        pageJohnPage.click("text=Login"); // Interact with login form ptovide Username & Password
-        pageJohnPage.fill("input[name='_username']", _propUsernameJohn);
-        pageJohnPage.fill("input[name='_password']", _propPasswordJohn);
-        pageJohnPage.click("input[value='Login']");
-        pageJohnPage.waitForLoadState();
 
         BrowserType firefox = playwright.firefox();
         BrowserContext context1 = firefox.launchPersistentContext(Paths.get(""),
@@ -171,11 +145,7 @@ public class ReadABDataUploadInSMSJohn {
             .setTimeout(60000).setHeadless(false)
             .setIgnoreHTTPSErrors(true)  );
 
-      /*      BrowserContext contextCompany = firefox.launchPersistentContext(Paths.get(""),
-            new BrowserType.LaunchPersistentContextOptions()
-              .setTimeout(60000).setHeadless(false)
-              .setIgnoreHTTPSErrors(true)  ); */
-
+     
          Page pagesms = context1.newPage();
          pagesms.route("**/*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());
           pagesms.navigate(_smsUrl); //Navigate to SMS pagesms
@@ -220,10 +190,7 @@ public class ReadABDataUploadInSMSJohn {
         _propReload=_propReloadUrlWNWH; 
          page=pageWNWHPage;     } 
 
-         else if (_ABOfficeUrl.equalsIgnoreCase("JOHN")){
-        _propReload=_propReloadUrlJohn; 
-         page=pageJohnPage;     } 
-            
+                   
         else 
          System.out.println("Do Nothing");
     
@@ -236,8 +203,8 @@ public class ReadABDataUploadInSMSJohn {
     else 
     csvFilePropName  = _suburbGroup+" - "+(_propertyName.replace("/","-")+" - "+_typeOfAddress+" - "+_typeofBuyers+" - "+((String) (java.time.LocalDate.now()+"-"+java.time.LocalTime.now()).subSequence(0, 19)).replace(":","-"));
     
-    if (_ABOfficeUrl.equalsIgnoreCase("JOHN"))
-        csvFilePropName="JOHN-ForSale "+csvFilePropName; 
+    if (_ABOfficeUrl.equalsIgnoreCase("WNWH"))
+        csvFilePropName="Amit-ForSale- "+csvFilePropName; 
     
     String csvFileName = _destinationCSVFolder+csvFilePropName+".csv";  
    
@@ -281,9 +248,6 @@ public class ReadABDataUploadInSMSJohn {
       }
       
       
-         
-      String concatString= "text=" + _propertyNameSuburbGroup;
-     // page.click(concatString); //Click on Property Name
 
       switch (_typeofBuyers) {
 
@@ -308,26 +272,14 @@ public class ReadABDataUploadInSMSJohn {
       page.click("div[title='Print Contacts']"); //Print Contacts
       
       Page basicContactListPage ;
-      /*if (_ABOfficeUrl.equalsIgnoreCase("Company")){
-      basicContactListPage = contextCompany.waitForPage(() -> {
-         
-          }); /
-          
-         } 
-         
-         else */
+    
          if (_ABOfficeUrl.equalsIgnoreCase("WNWH")){
           basicContactListPage = contextWNWH.waitForPage(() -> {
             pageWNWHPage.click("text=Basic Contact/Call List");  });
             
            } 
 
-      else if (_ABOfficeUrl.equalsIgnoreCase("JOHN")){
-          basicContactListPage = contextJohn.waitForPage(() -> {
-            pageJohnPage.click("text=Basic Contact/Call List");  });
-            
-           } 
-
+      
       else 
       basicContactListPage = context.newPage();
 
@@ -344,10 +296,7 @@ public class ReadABDataUploadInSMSJohn {
 
        records = "Tariq Jameel,,0421250566,,,,\nZareena Banu,,0480120604,,,,\n";;
         
-       //if (_ABOfficeUrl.equalsIgnoreCase("JOHN"))
-       // records = "John Irudayaraj,,0433969731,,,,\\n";       
-       //else
-       // records = "Tariq Jameel,,0421250566,,,,\nZareena Banu,,0480120604,,,,\n";;    //  
+      
 
        com.microsoft.playwright.Locator locatortd=basicContactListPage.locator("td");         
        
