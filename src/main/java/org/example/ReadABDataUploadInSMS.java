@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserContext;
@@ -28,6 +29,7 @@ public class ReadABDataUploadInSMS {
     String _smsUrl="";
     String _smsUsername="";
     String _smsReloadUrl="";
+    String _smsFilterListurl="https://app.smsbroadcast.com.au/contacts-v2/groups?filter=";
     String _smsPassword="";  
     String _typeOfAddress="";//Read from _inputFileCsv File
     String _typeofBuyers="";
@@ -35,6 +37,7 @@ public class ReadABDataUploadInSMS {
     String _propertyNameSuburbGroup="";
     String _suburbGroup="";
     String _ABOfficeUrl="";
+    Path ChromeuserDataDir = Paths.get("C:\\Users\\P128DEF\\AppData\\Local\\Google\\Chrome\\User Data"); //\\Profile 2
     
    // try {
 
@@ -94,15 +97,31 @@ public class ReadABDataUploadInSMS {
       String tempStr="";
       try (Playwright playwright = Playwright.create()) { 
 
-        BrowserType chromium = playwright.chromium();
-        Browser browser =  chromium.launch(new BrowserType.LaunchOptions().setHeadless(false).setChannel("chrome").setTimeout(1200000).setExecutablePath(Paths.get("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe")));
-        BrowserContext context = browser.newContext(); 
-        Page  page  = browser.newPage();  
-        page.route("**/*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());
+      BrowserType chromium = playwright.chromium();
+      Browser browser;// =  chromium.launch( new BrowserType.LaunchOptions().setHeadless(false).setChannel("chrome").setTimeout(1200000).setExecutablePath(Paths.get("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe")));
+      BrowserContext B2 = chromium.launchPersistentContext(ChromeuserDataDir);
+      Page pagetest = B2.newPage();
+      pagetest.route("**/*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());
+
+            // Interact with SMS login form to provide Username & Password      
+            pagetest.fill("input[name='username']", _smsUsername);
+            pagetest.fill("input[name='password']", "Toejan@123");
+            //pagesms.fill("input[name='password']", _smsPassword);
+            pagetest.click("button[name='login']");  
+
+     //Page pagetest = contextWNWH.newPage();
+     pagetest.navigate(_smsUrl); //Navigate to SMS pagesms          
+     Thread.sleep(3000);
+      
+       Page  page  = B2.newPage();  
+       page.route("**/*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());
     
         Browser browserWNWH =  chromium.launch(new BrowserType.LaunchOptions().setHeadless(false).setChannel("chrome").setTimeout(1200000).setExecutablePath(Paths.get("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe")));
         BrowserContext contextWNWH = browserWNWH.newContext();          
             
+       // BrowserType Chrome2 = playwright.chromium();
+        
+
         Page pageWNWHPage = contextWNWH.newPage(); 
         pageWNWHPage.route("**/*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());
 
@@ -116,21 +135,31 @@ public class ReadABDataUploadInSMS {
         pageWNWHPage.click("input[value='Login']");
         pageWNWHPage.waitForLoadState();
 
-         
-     BrowserType firefox = playwright.firefox();
+        Page pagesms = contextWNWH.newPage();
+        pagesms.navigate(_smsUrl); //Navigate to SMS pagesms          
+        Thread.sleep(3000);
+        
+      
+        //"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe
+        //"C:\\Users\\P128DEF\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 2"
+
+        /*  BrowserType firefox = playwright.firefox();
         BrowserContext context1 = firefox.launchPersistentContext(Paths.get(""),
           new BrowserType.LaunchPersistentContextOptions()
             .setTimeout(60000).setHeadless(false)
             .setIgnoreHTTPSErrors(true)  );
-
          Page pagesms = context1.newPage();
-         pagesms.route("**/*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());
-          pagesms.navigate(_smsUrl); //Navigate to SMS pagesms
-         Thread.sleep(3000);
+         pagesms.route("**/
+          //*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());  */
+
+         // Page pagesms = ChromeContext2.newPage(); pagesms.route("**/*.{png,jpg,jToejan@12peg,svg,fli,flc}", route -> route.abort());
+
+         
          
       // Interact with SMS login form to provide Username & Password      
-    pagesms.fill("input[name='username']", _smsUsername);
-      pagesms.fill("input[name='password']", _smsPassword);
+      pagesms.fill("input[name='username']", _smsUsername);
+      pagesms.fill("input[name='password']", "Toejan@123");
+      //pagesms.fill("input[name='password']", _smsPassword);
       pagesms.click("button[name='login']");  
 
       pagesms.waitForLoadState();    
@@ -190,8 +219,10 @@ public class ReadABDataUploadInSMS {
    //page.click("a[class='banner-close']");
       Thread.sleep(3000);
       // Add suburb to Poperty Address
+      //Apr10th 
+      
       _propertyNameSuburbGroup = _propertyName + ", " + _suburbGroup;
-  
+  /* 
       page.click("span[class='unisearch-pro-label']"); //Click on Search Icon
       page.click("input[id='unisearch-pro-search']");
       page.fill("input[id='unisearch-pro-search']", _propertyNameSuburbGroup);
@@ -336,57 +367,66 @@ public class ReadABDataUploadInSMS {
         builder.append(records);
          pw.write(builder.toString());
          pw.close();
-          basicContactListPage.close();
+          basicContactListPage.close(); */
       //SMS STart
          ///////////////////////////////     
          pagesms.navigate(_smsReloadUrl); 
         
       pagesms.click("li[data-test='menu-contacts']");  //Go to Contacts            
-      pagesms.click("a[data-test='contact-groups']");  //Go to Contact Groups
-      
-      pagesms.click("button[name='new-group']");          
-      
-      pagesms.fill("input[id='name']", csvFilePropName);
-      pagesms.click("button[name='modal-addEditGroup']");
+      pagesms.click("a[data-test='contact-groups-v2']");  //Go to Lists
+      pagesms.click("button:has-text(\"New list\")"); //Click on New List
+     
+      pagesms.fill("input[class='sc-gplwa-d Knjej']", "Apr1234" ); //csvFilePropName   
+      pagesms.click("button:has-text(\"Create list\")"); //Click on create list button
      
       Thread.sleep(5000); 
-
-      pagesms.click("input[name='contactGroupsFilter']");
-      pagesms.fill("input[name='contactGroupsFilter']", csvFilePropName);     
-      Thread.sleep(5000);   
-      pagesms.keyboard().press("Enter");  
-      Thread.sleep(5000);
       
-      com.microsoft.playwright.Locator tdsmsCGSearch=pagesms.locator("td");       
+     pagesms.click("input[class='sc-gplwa-d kYLkcC']"); // Click on Search input 
+     pagesms.fill("input[class='sc-gplwa-d kYLkcC']","Apr1234" ); //csvFilePropName    
+      _smsFilterListurl=_smsFilterListurl+"Apr1234"; //csvFilePropName
+      pagesms.navigate(_smsFilterListurl);   
+      Thread.sleep(9000);  
+      
+    com.microsoft.playwright.Locator tdsmsCGSearch=pagesms.locator("td");       
             
       for (int i=0;i<pagesms.locator("tr").count();i++){ 
 
-       if (tdsmsCGSearch.nth(i).innerText().equals(csvFilePropName)){  
+       if (tdsmsCGSearch.nth(i).innerText().equals("Apr1234")){  //csvFilePropName
            tdsmsCGSearch.nth(i).click();
-          Thread.sleep(3000);        
-          pagesms.click("button[name='import-contacts']"); 
+          Thread.sleep(3000);  
+          //pagesms.click("class:has-text(\"Apr1234\")"); //Click on the result item  --- csvFilePropName
+      //pagesms.keyboard().press("Enter");  
+      Thread.sleep(5000);
+            
+          
+          // V1 pagesms.click("button[name='import-contacts']"); 
+          
+          pagesms.click("button[class='sc-dtBdUo dVHTXp']"); //Click on Import
+
+          //Click on Browse
+          //pagesms.click("span[class='f09uz']");
+          
 
          FileChooser fileChooser = pagesms.waitForFileChooser(() -> {
-         pagesms.click("span[class='f09uz']"); //Click on Browse  
-         //pagesms.click("p[data-test='paragraph-undefined']");        
+          pagesms.click("button:has-text(\"Browse\")"); //Click on Browse
          });
-
         
-         fileChooser.setFiles(Paths.get(csvFileName));
+        // fileChooser.setFiles(Paths.get(csvFileName));
          Thread.sleep(3000);
  
  
       //Number
-     pagesms.click("div[name='columnMapping.mobilenumber']");
+      
+     pagesms.click("div[class='sc-cmaqmh kamHzW sc-dJiZtA itDYMR']");
+     page.fill("input[aria-autocomplete='list']","Number");
      pagesms.keyboard().press("ArrowDown");  
-     pagesms.click("[data-test='select-columnMapping[mobilenumber]-number']");   
-   
-
+     page.keyboard().press("Enter")  ; 
+     
     
         
-         pagesms.click("button[name='import']"); //Click on Import  
+         pagesms.click("button[class='sc-dtBdUo dVHTXp']"); //Click on Import  
          Thread.sleep(5000);
-         pagesms.click("button[name='modal-importContactsResult']");    
+         pagesms.click("button[class='sc-dtBdUo kZlmme']");    
          
        }
        
