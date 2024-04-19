@@ -192,7 +192,7 @@ public class ReadABDataUploadInSMSExcel {
     String xlsxFileName = _destinationCSVFolder+csvFilePropName+".xlsx";  
       page.navigate(_propReload);    
                  //alert banner notification
- page.locator("xpath=/html/body/div[4]/div[1]/div/div[2]/p/a/i").click(); 
+ //page.locator("xpath=/html/body/div[4]/div[1]/div/div[2]/p/a/i").click(); 
    //page.click("a[class='banner-close']");
       Thread.sleep(3000);
       // Add suburb to Poperty Address
