@@ -14,9 +14,15 @@ import com.microsoft.playwright.FileChooser;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import com.opencsv.exceptions.CsvValidationException;
+import org.apache.poi.xssf.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 
-public class ReadABDataUploadInSMSJohn {
+public class ReadABDataUploadInSMSJohnExcel {
   public static void main(String[] args) throws IOException, InterruptedException, CsvValidationException  {
    
     String _credsCsv="C:\\Users\\P128DEF\\OneDrive - Ceridian HCM Inc\\MyFolder\\Zar-Per\\TJ\\Auto\\creds.csv";
@@ -44,11 +50,9 @@ public class ReadABDataUploadInSMSJohn {
     String _propertyNameSuburbGroup="";
     String _suburbGroup="";
     String _ABOfficeUrl="";
+    String csvFilePropName="";
     
-   // try {
-
-     // FileWriter myWriter = new FileWriter(_outputLogFile);
-      
+         
     try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(_credsCsv), "UTF8"))) {
       String[] lineInArray; 
       String tempStr="";
@@ -142,23 +146,10 @@ public class ReadABDataUploadInSMSJohn {
         chromium.launch(new BrowserType.LaunchOptions().setHeadless(false).setChannel("chrome").setTimeout(1200000).setExecutablePath(Paths.get("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe")));
         BrowserContext contextJohn = browserWNWH.newContext();  
 
-       
-        Page pageWNWHPage = contextWNWH.newPage(); 
-        pageWNWHPage.route("**/*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());
-
         Page pageJohnPage = contextJohn.newPage(); 
         pageJohnPage.route("**/*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());
 
-        //For Tariq
-
-        pageWNWHPage.navigate(_propReloadUrlWNWH);  
-        pageWNWHPage.click("text=Login"); // Interact with login form ptovide Username & Password
-        pageWNWHPage.fill("input[name='_username']", _propUsernameWNWH);
-        pageWNWHPage.fill("input[name='_password']", _propPasswordWNWH);
-        pageWNWHPage.click("input[value='Login']");
-        pageWNWHPage.waitForLoadState();
-
-         
+              
 //for John
         pageJohnPage.navigate(_propReloadUrlJohn);  
         pageJohnPage.click("text=Login"); // Interact with login form ptovide Username & Password
@@ -173,11 +164,7 @@ public class ReadABDataUploadInSMSJohn {
             .setTimeout(60000).setHeadless(false)
             .setIgnoreHTTPSErrors(true)  );
 
-      /*      BrowserContext contextCompany = firefox.launchPersistentContext(Paths.get(""),
-            new BrowserType.LaunchPersistentContextOptions()
-              .setTimeout(60000).setHeadless(false)
-              .setIgnoreHTTPSErrors(true)  ); */
-
+     
          Page pagesms = context1.newPage();
          pagesms.route("**/*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());
           pagesms.navigate(_smsUrl); //Navigate to SMS pagesms
@@ -218,9 +205,7 @@ public class ReadABDataUploadInSMSJohn {
         _propReload=_propReloadUrlCompany; 
         
       }
-        else if (_ABOfficeUrl.equalsIgnoreCase("WNWH")){
-        _propReload=_propReloadUrlWNWH; 
-         page=pageWNWHPage;     } 
+        
 
          else if (_ABOfficeUrl.equalsIgnoreCase("JOHN")){
         _propReload=_propReloadUrlJohn; 
@@ -230,8 +215,6 @@ public class ReadABDataUploadInSMSJohn {
          System.out.println("Do Nothing");
     
   
-    
-     String csvFilePropName;
 
     if (_suburbGroup=="")
      csvFilePropName= (_propertyName.replace("/","-")+" - "+_typeOfAddress+" - "+_typeofBuyers+" - "+((String) (java.time.LocalDate.now()+"-"+java.time.LocalTime.now()).subSequence(0, 19)).replace(":","-"));   
@@ -239,14 +222,15 @@ public class ReadABDataUploadInSMSJohn {
     csvFilePropName  = _suburbGroup+" - "+(_propertyName.replace("/","-")+" - "+_typeOfAddress+" - "+_typeofBuyers+" - "+((String) (java.time.LocalDate.now()+"-"+java.time.LocalTime.now()).subSequence(0, 19)).replace(":","-"));
     
     if (_ABOfficeUrl.equalsIgnoreCase("JOHN"))
-        csvFilePropName="JOHN-ForSale "+csvFilePropName; 
+        csvFilePropName="JOHN"+csvFilePropName; 
     
     String csvFileName = _destinationCSVFolder+csvFilePropName+".csv";  
+    String xlsxFileName = _destinationCSVFolder+csvFilePropName+".xlsx";  
    
-      page.navigate(_propReload); 
+      page.navigate(_propReloadUrlJohn); 
      //alert banner notification
    //page.locator("xpath=/html/body/div[4]/div[1]/div/div[2]/p/a/i").click(); -older
-     // page.click("a[class='banner-close']");
+   //  page.click("a[class='banner-close']");
       Thread.sleep(3000);
       // Add suburb to Poperty Address
       _propertyNameSuburbGroup = _propertyName + ", " + _suburbGroup;
@@ -318,13 +302,7 @@ public class ReadABDataUploadInSMSJohn {
          } 
          
          else */
-         if (_ABOfficeUrl.equalsIgnoreCase("WNWH")){
-          basicContactListPage = contextWNWH.waitForPage(() -> {
-            pageWNWHPage.click("text=Basic Contact/Call List");  });
-            
-           } 
-
-      else if (_ABOfficeUrl.equalsIgnoreCase("JOHN")){
+    if (_ABOfficeUrl.equalsIgnoreCase("JOHN")){
           basicContactListPage = contextJohn.waitForPage(() -> {
             pageJohnPage.click("text=Basic Contact/Call List");  });
             
@@ -332,8 +310,7 @@ public class ReadABDataUploadInSMSJohn {
 
       else 
       basicContactListPage = context.newPage();
-
-        
+   
           
       basicContactListPage.waitForLoadState(); //Waiting for Contact lists to be loaded
       Thread.sleep(5000); 
@@ -417,69 +394,94 @@ public class ReadABDataUploadInSMSJohn {
          pw.write(builder.toString());
          pw.close();
           basicContactListPage.close();
-      //SMS STart
+    
+          try{  // Convert CSV files to XLS/XLSX format in Java
+       
+            XSSFWorkbook workbook = new XSSFWorkbook();
+             XSSFSheet sheet = workbook.createSheet("sheet1");
+             XSSFFont xssfFont = workbook.createFont();
+             xssfFont.setCharSet(XSSFFont.ANSI_CHARSET);
+             XSSFCellStyle cellStyle = workbook.createCellStyle();
+             cellStyle.setFont(xssfFont);
+             String currentLine;
+             int RowNum = -1;
+             BufferedReader br = new BufferedReader(new FileReader(csvFileName));//testcsvFilePropName  csvFileName
+             while((currentLine = br.readLine()) != null){
+                 String[] str = currentLine.split(",");
+                 RowNum++;
+                 XSSFRow currentRow = sheet.createRow(RowNum);
+                 for(int i=0; i< str.length; i++){
+                     str[i] = str[i].replaceAll("\"","");
+                     str[i] = str[i].replaceAll("=","");
+                     XSSFCell cell = currentRow.createCell(i);
+                     cell.setCellStyle(cellStyle);
+                     cell.setCellValue(str[i].trim());
+                 }
+             }
+             FileOutputStream fileOutputStream = new FileOutputStream(xlsxFileName);
+             workbook.write(fileOutputStream);
+             fileOutputStream.close();
+             br.close();            
+             workbook.close();    
+         }catch (Exception e){
+             e.printStackTrace();
+         }
+       
+//SMS STart
          ///////////////////////////////     
          pagesms.navigate(_smsReloadUrl); 
         
-      pagesms.click("li[data-test='menu-contacts']");  //Go to Contacts            
-      pagesms.click("a[data-test='contact-groups']");  //Go to Contact Groups
-      
-      pagesms.click("button[name='new-group']");          
-      
-      pagesms.fill("input[id='name']", csvFilePropName);
-      pagesms.click("button[name='modal-addEditGroup']");
-     
-      Thread.sleep(5000); 
-
-      pagesms.click("input[name='contactGroupsFilter']");
-      pagesms.fill("input[name='contactGroupsFilter']", csvFilePropName);     
-      Thread.sleep(3000);   
-      pagesms.keyboard().press("Enter");  
-      Thread.sleep(3000);
-      
-      com.microsoft.playwright.Locator tdsmsCGSearch=pagesms.locator("td");       
-            
-      for (int i=0;i<pagesms.locator("tr").count();i++){ 
-
-       if (tdsmsCGSearch.nth(i).innerText().equals(csvFilePropName)){  
-           tdsmsCGSearch.nth(i).click();
-          Thread.sleep(3000);        
-          pagesms.click("button[name='import-contacts']"); 
-
-         FileChooser fileChooser = pagesms.waitForFileChooser(() -> {
-         pagesms.click("span[class='f09uz']"); //Click on Browse  
-         //pagesms.click("p[data-test='paragraph-undefined']");        
-         });
-
-        
-         fileChooser.setFiles(Paths.get(csvFileName));
-         Thread.sleep(3000);
- 
- 
-      //Number
-     pagesms.click("div[name='columnMapping.mobilenumber']");
-     pagesms.keyboard().press("ArrowDown");  
-     pagesms.click("[data-test='select-columnMapping[mobilenumber]-number']");   
-   
-
-    
-        
-         pagesms.click("button[name='import']"); //Click on Import  
-         Thread.sleep(5000);
-         pagesms.click("button[name='modal-importContactsResult']");    
+       pagesms.click("li[data-test='menu-contacts']");  //Go to Contacts            
+         pagesms.click("a[data-test='contact-groups-v2']");  //Go to Lists
+         pagesms.click("button:has-text(\"New list\")"); //Click on New List
+         Thread.sleep(2000);  
+         pagesms.fill("input[class='sc-gplwa-d Knjej']", csvFilePropName ); //csvFilePropName   
+         Thread.sleep(2000); 
+         pagesms.click("button:has-text(\"Create list\")"); //Click on create list button
+         Thread.sleep(2000); 
          
-       }
-       
-      }
-      //////////////////////////////////// 
-   // SMS End*/ 
+        pagesms.click("input[class='sc-gplwa-d kYLkcC']"); // Click on Search input 
+        pagesms.fill("input[class='sc-gplwa-d kYLkcC']",csvFilePropName ); //csvFilePropName  
+        Thread.sleep(2000);  
+        pagesms.keyboard().press("Enter"); 
+        Thread.sleep(3000);  
+      
+          
+         
+       com.microsoft.playwright.Locator tdsmsCGSearch=pagesms.locator("td");       
+               
+         for (int i=0;i<pagesms.locator("tr").count();i++){ 
+   
+          if (tdsmsCGSearch.nth(i).innerText().equals(csvFilePropName)){  //csvFilePropName
+              tdsmsCGSearch.nth(i).click();
+             Thread.sleep(3000);  
+           
+             
+             pagesms.click("button[class='sc-dtBdUo dVHTXp']"); //Click on Import
+                  
+            FileChooser fileChooser = pagesms.waitForFileChooser(() -> {
+             pagesms.click("button:has-text(\"Browse\")"); //Click on Browse
+            });
+           
+           fileChooser.setFiles(Paths.get(xlsxFileName));
+               
+           Thread.sleep(2000);
+          
+           
+           pagesms.click("button[class='sc-dtBdUo dVHTXp']"); //Click on Import  
+          
+           Thread.sleep(2000);
+           pagesms.click("button:has-text(\"Import contacts\")");
+        
+           Thread.sleep(2000);
+          }
+        }     
+         }
+         
+      // SMS End*/ 
       
     }  
     //Playwright Try Ends here 
-    }  
-   } 
-   
-  //}
-  
-  } 
+  }    
+} 
 }
