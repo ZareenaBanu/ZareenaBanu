@@ -17,11 +17,11 @@ import com.opencsv.exceptions.CsvValidationException;
 import org.apache.poi.xssf.usermodel.*;
 
 
-public class ReadABDataUploadInSMSExcel {
+public class ReadABConactListUploadinSMSExcellastName {
   public static void main(String[] args) throws IOException, InterruptedException, CsvValidationException  {
    
     String _credsCsv="C:\\Users\\P128DEF\\OneDrive - Ceridian HCM Inc\\MyFolder\\Zar-Per\\TJ\\Auto\\creds.csv";
-    String _inputFileCsv="C:\\Users\\P128DEF\\OneDrive - Ceridian HCM Inc\\MyFolder\\Zar-Per\\TJ\\Auto\\InputFile.csv";
+   // String _inputFileCsv="C:\\Users\\P128DEF\\OneDrive - Ceridian HCM Inc\\MyFolder\\Zar-Per\\TJ\\Auto\\InputFile.csv";
     String _propUsernameWNWH="";
     String _propPasswordWNWH="";
     String _propReloadUrlWNWH="";
@@ -31,11 +31,11 @@ public class ReadABDataUploadInSMSExcel {
     String _smsUsername="";
     String _smsReloadUrl="";
     String _smsPassword="";  
-    String _typeOfAddress="";//Read from _inputFileCsv File
-    String _typeofBuyers="";
-    String _propertyName="";
-    String _propertyNameSuburbGroup="";
-    String _suburbGroup="";
+   // String _typeOfAddress="";//Read from _inputFileCsv File
+   // String _typeofBuyers="";
+  //  String _propertyName="";
+   // String _propertyNameSuburbGroup="";
+   // String _suburbGroup="";
     String _ABOfficeUrl="";
     String csvFilePropName="";
 
@@ -88,184 +88,100 @@ public class ReadABDataUploadInSMSExcel {
       }  
   } 
  
-    try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(_inputFileCsv), "UTF8"))) {
-      String[] lineInArray; 
-      String tempStr="";
-      try (Playwright playwright = Playwright.create()) { 
+  try (Playwright playwright = Playwright.create()) { 
 
-        BrowserType chromium = playwright.chromium();
-        Browser browser =  chromium.launch(new BrowserType.LaunchOptions().setHeadless(false).setChannel("chrome").setTimeout(1200000).setExecutablePath(Paths.get("")));//"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe")
-        BrowserContext context = browser.newContext(); 
-        Page  page  = browser.newPage();  
-        page.route("**/*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());
-    
-        Browser browserWNWH =  chromium.launch(new BrowserType.LaunchOptions().setHeadless(false).setChannel("chrome").setTimeout(1200000).setExecutablePath(Paths.get("")));//C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe
-        BrowserContext contextWNWH = browserWNWH.newContext();          
-            
-        Page pageWNWHPage = contextWNWH.newPage(); 
-        pageWNWHPage.route("**/*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());
+    BrowserType chromium = playwright.chromium();
+    Browser browser =  chromium.launch(new BrowserType.LaunchOptions().setHeadless(true).setChannel("chrome").setTimeout(1200000).setExecutablePath(Paths.get("")));//"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe")
+    BrowserContext context = browser.newContext(); 
+    Page  page  = browser.newPage();  
+    page.route("**/*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());
 
-       //For Tariq
+    Browser browserWNWH =  chromium.launch(new BrowserType.LaunchOptions().setHeadless(true).setChannel("chrome").setTimeout(1200000).setExecutablePath(Paths.get("")));//C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe
+    BrowserContext contextWNWH = browserWNWH.newContext();          
+        
+    Page pageWNWHPage = contextWNWH.newPage(); 
+    pageWNWHPage.route("**/*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());
 
-        pageWNWHPage.navigate(_propReloadUrlWNWH);  
-        Thread.sleep(3000);
-        pageWNWHPage.click("text=Login"); // Interact with login form ptovide Username & Password
-        pageWNWHPage.fill("input[name='_username']", _propUsernameWNWH);
-        pageWNWHPage.fill("input[name='_password']", _propPasswordWNWH);
-        pageWNWHPage.click("input[value='Login']");
-        pageWNWHPage.waitForLoadState();
+   //For Tariq
 
-   
-        BrowserType firefox = playwright.firefox();
-        BrowserContext context1 = firefox.launchPersistentContext(Paths.get(""),
-          new BrowserType.LaunchPersistentContextOptions()
-            .setTimeout(60000).setHeadless(false)
-            .setIgnoreHTTPSErrors(true) 
-            .setBaseURL(_smsUrl) );
-          
+    pageWNWHPage.navigate(_propReloadUrlWNWH);  
+    Thread.sleep(3000);
+    pageWNWHPage.click("text=Login"); // Interact with login form ptovide Username & Password
+    pageWNWHPage.fill("input[name='_username']", _propUsernameWNWH);
+    pageWNWHPage.fill("input[name='_password']", _propPasswordWNWH);
+    pageWNWHPage.click("input[value='Login']");
+    pageWNWHPage.waitForLoadState();
 
-         Page pagesms = context1.newPage();
-         pagesms.route("**/*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());
-          pagesms.navigate(_smsUrl); //Navigate to SMS pagesms
-         Thread.sleep(3000);
-         
-      // Interact with SMS login form to provide Username & Password      
-      pagesms.fill("input[name='username']", _smsUsername);
-      pagesms.fill("input[name='password']", _smsPassword);
-      pagesms.click("button[name='login']");  
 
-      pagesms.waitForLoadState();    
+    BrowserType firefox = playwright.firefox();
+    BrowserContext context1 = firefox.launchPersistentContext(Paths.get(""),
+      new BrowserType.LaunchPersistentContextOptions()
+        .setTimeout(60000).setHeadless(true)
+        .setIgnoreHTTPSErrors(true) 
+        .setBaseURL(_smsUrl) );
       
-      while ((tempStr=reader.readLine()) != null) {
 
-        _typeOfAddress="";
-        _typeofBuyers="";
-        _propertyName="";
-        _suburbGroup="";
-        _propertyNameSuburbGroup="";
+     Page pagesms = context1.newPage();
+     pagesms.route("**/*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());
+      pagesms.navigate(_smsUrl); //Navigate to SMS pagesms
+     Thread.sleep(3000);
+     
+  // Interact with SMS login form to provide Username & Password      
+  pagesms.fill("input[name='username']", _smsUsername);
+  pagesms.fill("input[name='password']", _smsPassword);
+  pagesms.click("button[name='login']");  
+
+  pagesms.waitForLoadState();    
+  
+    char ch;
+  for(ch = 'U'; ch <= 'Z'; ++ch) {
+      
+    System.out.println(ch);
         _ABOfficeUrl="";
         String _propReload="";
-        
-        lineInArray = tempStr.split(",");  
-        if (lineInArray[0].compareTo("_propertyName")==0)
-          continue;   
-      
-      _propertyName=lineInArray[0];
-      if (lineInArray.length>=2)       
-        _typeOfAddress=lineInArray[1];
-      if (lineInArray.length>=3)       
-        _typeofBuyers=lineInArray[2]; 
-      if (lineInArray.length>=4)       
-        _suburbGroup=lineInArray[3];
-      if (lineInArray.length>=5)       
-      _ABOfficeUrl=lineInArray[4];
-
-      if (_ABOfficeUrl.equalsIgnoreCase("Company")){
-        _propReload=_propReloadUrlCompany; 
-        
-      }
-        else if (_ABOfficeUrl.equalsIgnoreCase("WNWH")){
+        String StringChr=String.valueOf(ch); 
+       
         _propReload=_propReloadUrlWNWH; 
-         page=pageWNWHPage;     } 
-
-                  
-        else 
-         System.out.println("Do Nothing");
+         page=pageWNWHPage;   
+         
     
+   csvFilePropName  = "Tariq All Contacts From AB LastName-"+ch+"-"+((String) (java.time.LocalDate.now()+"-"+java.time.LocalTime.now()).subSequence(0, 19)).replace(":","-");
   
+         String csvFileName = _destinationCSVFolder+csvFilePropName+".csv";
+         String xlsxFileName = _destinationCSVFolder+csvFilePropName+".xlsx"; 
 
-    if (_suburbGroup=="")
-     csvFilePropName= (_propertyName.replace("/","-")+" - "+_typeOfAddress+" - "+_typeofBuyers+" - "+((String) (java.time.LocalDate.now()+"-"+java.time.LocalTime.now()).subSequence(0, 19)).replace(":","-"));   
-    else 
-    csvFilePropName  = _suburbGroup+" - "+(_propertyName.replace("/","-")+" - "+_typeOfAddress+" - "+_typeofBuyers+" - "+((String) (java.time.LocalDate.now()+"-"+java.time.LocalTime.now()).subSequence(0, 19)).replace(":","-"));
-    
-    if (_ABOfficeUrl.equalsIgnoreCase("JOHN"))
-        csvFilePropName="JOHN "+csvFilePropName; 
-    
-    String csvFileName = _destinationCSVFolder+csvFilePropName+".csv";
-    String xlsxFileName = _destinationCSVFolder+csvFilePropName+".xlsx";  
-      page.navigate(_propReload);    
+
+       page.navigate(_propReload);    
                  //alert banner notification
  //page.locator("xpath=/html/body/div[4]/div[1]/div/div[2]/p/a/i").click(); 
    //page.click("a[class='banner-close']");
-      Thread.sleep(3000);
+      Thread.sleep(9000);
       // Add suburb to Poperty Address
-      _propertyNameSuburbGroup = _propertyName + ", " + _suburbGroup;
+   
   
-      page.click("span[class='unisearch-pro-label']"); //Click on Search Icon
-      page.click("input[id='unisearch-pro-search']");
-      page.fill("input[id='unisearch-pro-search']", _propertyNameSuburbGroup);
-      page.keyboard().press("Enter")  ; 
-      Thread.sleep(3000);
-     
-      switch (_typeOfAddress) {
-
-        case "Listings":
-        page.click("li[data-type='listings']");
-      //  page.click("div[class='unisearch-pro-item-content ui-flex ui-flex-grow ui-flex-column ui-flex-start']");
-       //page.click("div[class='unisearch-pro-item unisearch-pro-item-listings ui-flex ui-col-gap-1']");
-       page.locator("xpath=/html/body/div[27]/div[1]/div[2]/div/div/form/div[2]/div[2]/div[3]/div[2]/div[1]/img").click();
+      page.click("li[id='nav4']"); //Click on Contacts on footer
+      page.click("span[class='advanced-search-btn']"); //Click on Advanced Search button
+      page.click("input[id='element_4_1_0_0_4']"); //Click on LastName Text box
       
-        break;
-
-        case "Properties":
-        page.click("li[data-type='properties']");
-        page.locator("xpath=/html/body/div[27]/div[1]/div[2]/div/div/form/div[2]/div[2]/div[5]/div[2]").click();   
-        break;
-
-        case "Projects":
-        page.click("a[id='projects']");
-        page.click("li[data-type='projects']");
-        page.locator("xpath=/html/body/div[27]/div[1]/div[2]/div/div/form/div[2]/div[2]/div[3]/div[2]/div[1]/img").click();
-        break;
-      
-        default:
-        page.click("li[data-type='listings']");
-        page.locator("xpath=/html/body/div[27]/div[1]/div[2]/div/div/form/div[2]/div[2]/div[3]/div[2]/div[1]/img").click();
-        break;
-
-      }     
-      
-         
-      switch (_typeofBuyers) {
-
-        case "PB":
-        page.click("h3:has-text(\"Prospective Buyers\")"); //Click on Prospective Buyers Link  
-        page.click("input[value='Contacts / Follow Up']");      
-        break;
-
-        case "MB":   
-          if (_typeOfAddress.compareTo("Listings")==0)        
-           page.click("div[title='Match Buyers to this Property']"); //Click on Match Buyers to this Property 
-          if (_typeOfAddress.compareTo("Properties")==0)        
-           page.click("div[title='Match Buyers']"); //Click on Match Buyers
-        break;
-                
-        default:         
-        page.click("h3:has-text(\"Prospective Buyers\")"); //Click on Prospective Buyers Link        
-        break;
-
-      }    
-      
+      page.fill("input[id='element_4_1_0_0_4']", StringChr);
+      Thread.sleep(8000); 
+      page.click("input[id='element_4_1_0_2_8']"); //Click on Search  
+      Thread.sleep(15000); 
       page.click("div[title='Print Contacts']"); //Print Contacts
       
       Page basicContactListPage ;
      
-         if (_ABOfficeUrl.equalsIgnoreCase("WNWH")){
+         
           basicContactListPage = contextWNWH.waitForPage(() -> 
           {
             pageWNWHPage.click("text=Basic Contact/Call List");
             } );
-            
-           } 
-
-        else 
-          basicContactListPage = context.newPage();
+         
 
         
           
       basicContactListPage.waitForLoadState(); //Waiting for Contact lists to be loaded
-      Thread.sleep(5000); 
+      Thread.sleep(20000); 
        
        FileWriter pw = new FileWriter(csvFileName);
        StringBuilder builder = new StringBuilder();      
@@ -407,8 +323,7 @@ public class ReadABDataUploadInSMSExcel {
              Thread.sleep(3000);  
            
              
-             pagesms.click("button[class='sc-iHGNWf hOfDeg']"); //Click on Import sc-iHGNWf hOfDeg
-                                        
+             pagesms.click("button[class='sc-dtBdUo dVHTXp']"); //Click on Import
                   
             FileChooser fileChooser = pagesms.waitForFileChooser(() -> {
              pagesms.click("button:has-text(\"Browse\")"); //Click on Browse
@@ -419,7 +334,7 @@ public class ReadABDataUploadInSMSExcel {
            Thread.sleep(2000);
           
            
-           pagesms.click("button[class='sc-iHGNWf hOfDeg']"); //Click on Import  
+           pagesms.click("button[class='sc-dtBdUo dVHTXp']"); //Click on Import  
           
            Thread.sleep(2000);
            pagesms.click("button:has-text(\"Import contacts\")");
@@ -427,13 +342,13 @@ public class ReadABDataUploadInSMSExcel {
            Thread.sleep(2000);
           }
         }     
-         }
+         
          
       // SMS End*/ 
       
     }  
     //Playwright Try Ends here 
-    }  
+}
   
    
   } 
