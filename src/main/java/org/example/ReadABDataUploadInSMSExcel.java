@@ -38,6 +38,8 @@ public class ReadABDataUploadInSMSExcel {
     String _suburbGroup="";
     String _ABOfficeUrl="";
     String csvFilePropName="";
+    boolean _headlessmodeAB = true;
+    boolean _headlessmodeSMS = true;
 
   try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(_credsCsv), "UTF8"))) {
       String[] lineInArray; 
@@ -94,12 +96,12 @@ public class ReadABDataUploadInSMSExcel {
       try (Playwright playwright = Playwright.create()) { 
 
         BrowserType chromium = playwright.chromium();
-        Browser browser =  chromium.launch(new BrowserType.LaunchOptions().setHeadless(false).setChannel("chrome").setTimeout(1200000).setExecutablePath(Paths.get("")));//"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe")
+        Browser browser =  chromium.launch(new BrowserType.LaunchOptions().setHeadless(_headlessmodeAB).setChannel("chrome").setTimeout(1200000).setExecutablePath(Paths.get("")));//"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe")
         BrowserContext context = browser.newContext(); 
         Page  page  = browser.newPage();  
         page.route("**/*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());
     
-        Browser browserWNWH =  chromium.launch(new BrowserType.LaunchOptions().setHeadless(false).setChannel("chrome").setTimeout(1200000).setExecutablePath(Paths.get("")));//C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe
+        Browser browserWNWH =  chromium.launch(new BrowserType.LaunchOptions().setHeadless(_headlessmodeAB).setChannel("chrome").setTimeout(1200000).setExecutablePath(Paths.get("")));//C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe
         BrowserContext contextWNWH = browserWNWH.newContext();          
             
         Page pageWNWHPage = contextWNWH.newPage(); 
@@ -119,7 +121,7 @@ public class ReadABDataUploadInSMSExcel {
         BrowserType firefox = playwright.firefox();
         BrowserContext context1 = firefox.launchPersistentContext(Paths.get(""),
           new BrowserType.LaunchPersistentContextOptions()
-            .setTimeout(60000).setHeadless(false)
+            .setTimeout(60000).setHeadless(_headlessmodeSMS)
             .setIgnoreHTTPSErrors(true) 
             .setBaseURL(_smsUrl) );
           
@@ -184,6 +186,7 @@ public class ReadABDataUploadInSMSExcel {
     
     String csvFileName = _destinationCSVFolder+csvFilePropName+".csv";
     String xlsxFileName = _destinationCSVFolder+csvFilePropName+".xlsx";  
+    System.out.println(_propertyName + "   :Starting in AB");
       page.navigate(_propReload);    
                  //alert banner notification
  //page.locator("xpath=/html/body/div[4]/div[1]/div/div[2]/p/a/i").click(); 
@@ -269,7 +272,7 @@ public class ReadABDataUploadInSMSExcel {
        
        FileWriter pw = new FileWriter(csvFileName);
        StringBuilder builder = new StringBuilder();      
-       String headerList = "FirstName,Address,Number,Email,Home,Work,emailSubscription";                
+       String headerList = "FirstName,Location,Number,Email,Home,Work,emailSubscription";                
        builder.append(headerList +"\n");
        String   records;
       
@@ -375,7 +378,7 @@ public class ReadABDataUploadInSMSExcel {
             e.printStackTrace();
         }
       
-        
+        System.out.println(_propertyName + "   :DONE Creating Excel File");
    
       //SMS STart
          ///////////////////////////////     
@@ -404,7 +407,7 @@ public class ReadABDataUploadInSMSExcel {
    
           if (tdsmsCGSearch.nth(i).innerText().equals(csvFilePropName)){  //csvFilePropName
               tdsmsCGSearch.nth(i).click();
-             Thread.sleep(3000);  
+             Thread.sleep(5000);  
            
              
              pagesms.click("button[class='sc-iHGNWf hOfDeg']"); //Click on Import sc-iHGNWf hOfDeg
@@ -416,19 +419,19 @@ public class ReadABDataUploadInSMSExcel {
            
            fileChooser.setFiles(Paths.get(xlsxFileName));
                
-           Thread.sleep(2000);
+           Thread.sleep(5000);
           
            
            pagesms.click("button[class='sc-iHGNWf hOfDeg']"); //Click on Import  
           
            Thread.sleep(2000);
            pagesms.click("button:has-text(\"Import contacts\")");
-        
+           System.out.println(_suburbGroup + "   :DONE Uploading in SMS\n________________________________________________________");
            Thread.sleep(2000);
           }
         }     
          }
-         
+        
       // SMS End*/ 
       
     }  

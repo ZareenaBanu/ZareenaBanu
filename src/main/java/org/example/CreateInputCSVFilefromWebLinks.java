@@ -24,6 +24,7 @@ public class CreateInputCSVFilefromWebLinks {
 		final String ipFilename ="C:\\Users\\P128DEF\\OneDrive - Ceridian HCM Inc\\MyFolder\\Zar-Per\\TJ\\Auto\\PropLinksConversion\\Input-PropLinks.csv";
 		String records = "_propertyName,_typeOfAddress,_typeofBuyers,_suburbGroup,_ABOfficeUrl\n";
 		PrintWriter pw = null;
+		boolean _headlessmodeAB = true;
 		List<String> content;
         
 		
@@ -31,7 +32,7 @@ public class CreateInputCSVFilefromWebLinks {
 			 pw = new PrintWriter(file);
     		 BrowserType WebKit = playwright.webkit();
 			 BrowserContext context2 = WebKit.launchPersistentContext(Paths.get(""), new BrowserType.LaunchPersistentContextOptions()
-			 .setTimeout(0).setHeadless(false) .setIgnoreHTTPSErrors(true)  );
+			 .setTimeout(0).setHeadless(_headlessmodeAB) .setIgnoreHTTPSErrors(true)  );
 			 Page page = context2.newPage();
 			 StringBuilder builder = new StringBuilder();         	
  			 content = Files.readAllLines(Paths.get(ipFilename));
