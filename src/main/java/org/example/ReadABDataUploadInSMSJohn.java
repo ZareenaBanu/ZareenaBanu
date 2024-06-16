@@ -7,6 +7,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Paths;
+
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.BrowserType;
@@ -20,7 +28,7 @@ public class ReadABDataUploadInSMSJohn {
   public static void main(String[] args) throws IOException, InterruptedException, CsvValidationException  {
    
     String _credsCsv="C:\\Users\\P128DEF\\OneDrive - Ceridian HCM Inc\\MyFolder\\Zar-Per\\TJ\\Auto\\creds.csv";
-    String _inputFileCsv="C:\\Users\\P128DEF\\OneDrive - Ceridian HCM Inc\\MyFolder\\Zar-Per\\TJ\\Auto\\InputFile.csv";
+    String _inputFileCsv="C:\\Users\\P128DEF\\OneDrive - Ceridian HCM Inc\\MyFolder\\Zar-Per\\TJ\\Auto\\InputFile-John.csv";
 
     String _propUrlWNWH="";//Read from _credsCsv File
     String _propUsernameWNWH="";
@@ -44,7 +52,9 @@ public class ReadABDataUploadInSMSJohn {
     String _propertyNameSuburbGroup="";
     String _suburbGroup="";
     String _ABOfficeUrl="";
-    
+    boolean _headlessmodeAB = true;
+    boolean _headlessmodeSMS = true;
+
    // try {
 
      // FileWriter myWriter = new FileWriter(_outputLogFile);
@@ -131,15 +141,15 @@ public class ReadABDataUploadInSMSJohn {
       try (Playwright playwright = Playwright.create()) { 
 
         BrowserType chromium = playwright.chromium();
-        Browser browser =  chromium.launch(new BrowserType.LaunchOptions().setHeadless(false).setChannel("chrome").setTimeout(1200000).setExecutablePath(Paths.get("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe")));
+        Browser browser =  chromium.launch(new BrowserType.LaunchOptions().setHeadless(_headlessmodeAB).setChannel("chrome").setTimeout(1200000).setExecutablePath(Paths.get("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe")));
         BrowserContext context = browser.newContext(); 
         Page  page  = browser.newPage();  
         page.route("**/*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());
     
-        Browser browserWNWH =  chromium.launch(new BrowserType.LaunchOptions().setHeadless(false).setChannel("chrome").setTimeout(1200000).setExecutablePath(Paths.get("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe")));
+        Browser browserWNWH =  chromium.launch(new BrowserType.LaunchOptions().setHeadless(_headlessmodeAB).setChannel("chrome").setTimeout(1200000).setExecutablePath(Paths.get("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe")));
         BrowserContext contextWNWH = browserWNWH.newContext();  
         
-        chromium.launch(new BrowserType.LaunchOptions().setHeadless(false).setChannel("chrome").setTimeout(1200000).setExecutablePath(Paths.get("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe")));
+        chromium.launch(new BrowserType.LaunchOptions().setHeadless(_headlessmodeAB).setChannel("chrome").setTimeout(1200000).setExecutablePath(Paths.get("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe")));
         BrowserContext contextJohn = browserWNWH.newContext();  
 
        
@@ -170,7 +180,7 @@ public class ReadABDataUploadInSMSJohn {
         BrowserType firefox = playwright.firefox();
         BrowserContext context1 = firefox.launchPersistentContext(Paths.get(""),
           new BrowserType.LaunchPersistentContextOptions()
-            .setTimeout(60000).setHeadless(false)
+            .setTimeout(60000).setHeadless(_headlessmodeSMS)
             .setIgnoreHTTPSErrors(true)  );
 
       /*      BrowserContext contextCompany = firefox.launchPersistentContext(Paths.get(""),
@@ -241,9 +251,10 @@ public class ReadABDataUploadInSMSJohn {
     if (_ABOfficeUrl.equalsIgnoreCase("JOHN"))
         csvFilePropName="JOHN-ForSale "+csvFilePropName; 
     
-    String csvFileName = _destinationCSVFolder+csvFilePropName+".csv";  
-   
-      page.navigate(_propReload); 
+        String csvFileName = _destinationCSVFolder+csvFilePropName+".csv";
+        String xlsxFileName = _destinationCSVFolder+csvFilePropName+".xlsx";  
+        System.out.println(_propertyName + "   :Starting in AB");
+       page.navigate(_propReload); 
      //alert banner notification
    //page.locator("xpath=/html/body/div[4]/div[1]/div/div[2]/p/a/i").click(); -older
      // page.click("a[class='banner-close']");
@@ -416,61 +427,90 @@ public class ReadABDataUploadInSMSJohn {
         builder.append(records);
          pw.write(builder.toString());
          pw.close();
-          basicContactListPage.close();
-      //SMS STart
+        basicContactListPage.close();
+     
+       try{  // Convert CSV files to XLS/XLSX format in Java
+       
+           XSSFWorkbook workbook = new XSSFWorkbook();
+            XSSFSheet sheet = workbook.createSheet("sheet1");
+            XSSFFont xssfFont = workbook.createFont();
+            xssfFont.setCharSet(XSSFFont.ANSI_CHARSET);
+            XSSFCellStyle cellStyle = workbook.createCellStyle();
+            cellStyle.setFont(xssfFont);
+            String currentLine;
+            int RowNum = -1;
+            BufferedReader br = new BufferedReader(new FileReader(csvFileName));//testcsvFilePropName  csvFileName
+            while((currentLine = br.readLine()) != null){
+                String[] str = currentLine.split(",");
+                RowNum++;
+                XSSFRow currentRow = sheet.createRow(RowNum);
+                for(int i=0; i< str.length; i++){
+                    str[i] = str[i].replaceAll("\"","");
+                    str[i] = str[i].replaceAll("=","");
+                    XSSFCell cell = currentRow.createCell(i);
+                    cell.setCellStyle(cellStyle);
+                    cell.setCellValue(str[i].trim());
+                }
+            }
+            FileOutputStream fileOutputStream = new FileOutputStream(xlsxFileName);
+            workbook.write(fileOutputStream);
+            fileOutputStream.close();
+            br.close();            
+            workbook.close();    
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+      
+        System.out.println(_propertyName + "   :DONE Creating Excel File");
+     //SMS STart
          ///////////////////////////////     
          pagesms.navigate(_smsReloadUrl); 
         
-      pagesms.click("li[data-test='menu-contacts']");  //Go to Contacts            
-      pagesms.click("a[data-test='contact-groups']");  //Go to Contact Groups
+       pagesms.click("li[data-test='menu-contacts']");  //Go to Contacts            
+         pagesms.click("a[data-test='contact-groups-v2']");  //Go to Lists
+         pagesms.click("button:has-text(\"New list\")"); //Click on New List
+         Thread.sleep(2000);  
+         pagesms.fill("input[class='sc-gplwa-d Knjej']", csvFilePropName ); //csvFilePropName   
+         Thread.sleep(2000); 
+         pagesms.click("button:has-text(\"Create list\")"); //Click on create list button
+         Thread.sleep(2000); 
+         
+        pagesms.click("input[class='sc-gplwa-d kYLkcC']"); // Click on Search input 
+        pagesms.fill("input[class='sc-gplwa-d kYLkcC']",csvFilePropName ); //csvFilePropName  
+        Thread.sleep(2000);  
+        pagesms.keyboard().press("Enter"); 
+        Thread.sleep(3000);  
       
-      pagesms.click("button[name='new-group']");          
-      
-      pagesms.fill("input[id='name']", csvFilePropName);
-      pagesms.click("button[name='modal-addEditGroup']");
-     
-      Thread.sleep(5000); 
-
-      pagesms.click("input[name='contactGroupsFilter']");
-      pagesms.fill("input[name='contactGroupsFilter']", csvFilePropName);     
-      Thread.sleep(3000);   
-      pagesms.keyboard().press("Enter");  
-      Thread.sleep(3000);
-      
-      com.microsoft.playwright.Locator tdsmsCGSearch=pagesms.locator("td");       
+          
+         
+       com.microsoft.playwright.Locator tdsmsCGSearch=pagesms.locator("td");       
             
       for (int i=0;i<pagesms.locator("tr").count();i++){ 
-
-       if (tdsmsCGSearch.nth(i).innerText().equals(csvFilePropName)){  
-           tdsmsCGSearch.nth(i).click();
-          Thread.sleep(3000);        
-          pagesms.click("button[name='import-contacts']"); 
-
-         FileChooser fileChooser = pagesms.waitForFileChooser(() -> {
-         pagesms.click("span[class='f09uz']"); //Click on Browse  
-         //pagesms.click("p[data-test='paragraph-undefined']");        
-         });
-
-        
-         fileChooser.setFiles(Paths.get(csvFileName));
-         Thread.sleep(3000);
- 
- 
-      //Number
-     pagesms.click("div[name='columnMapping.mobilenumber']");
-     pagesms.keyboard().press("ArrowDown");  
-     pagesms.click("[data-test='select-columnMapping[mobilenumber]-number']");   
    
-
-    
-        
-         pagesms.click("button[name='import']"); //Click on Import  
-         Thread.sleep(5000);
-         pagesms.click("button[name='modal-importContactsResult']");    
+        if (tdsmsCGSearch.nth(i).innerText().equals(csvFilePropName)){  //csvFilePropName
+            tdsmsCGSearch.nth(i).click();
+           Thread.sleep(9000);             
+           
+           pagesms.click("button[class='sc-iHGNWf hOfDeg']"); //Click on Import sc-iHGNWf hOfDeg
+                                      
+                
+          FileChooser fileChooser = pagesms.waitForFileChooser(() -> {
+           pagesms.click("button:has-text(\"Browse\")"); //Click on Browse
+          });
          
-       }
-       
-      }
+         fileChooser.setFiles(Paths.get(xlsxFileName));
+             
+         Thread.sleep(9000);
+        
+         
+         pagesms.click("button[class='sc-iHGNWf hOfDeg']"); //Click on Import  
+        
+         Thread.sleep(2000);
+         pagesms.click("button:has-text(\"Import contacts\")");
+         System.out.println(_suburbGroup + "   :DONE Uploading in SMS\n________________________________________________________");
+         Thread.sleep(2000);
+        }
+      }     
       //////////////////////////////////// 
    // SMS End*/ 
       

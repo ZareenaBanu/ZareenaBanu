@@ -407,8 +407,7 @@ public class ReadABDataUploadInSMSExcel {
    
           if (tdsmsCGSearch.nth(i).innerText().equals(csvFilePropName)){  //csvFilePropName
               tdsmsCGSearch.nth(i).click();
-             Thread.sleep(5000);  
-           
+             Thread.sleep(9000);             
              
              pagesms.click("button[class='sc-iHGNWf hOfDeg']"); //Click on Import sc-iHGNWf hOfDeg
                                         
@@ -419,7 +418,7 @@ public class ReadABDataUploadInSMSExcel {
            
            fileChooser.setFiles(Paths.get(xlsxFileName));
                
-           Thread.sleep(5000);
+           Thread.sleep(9000);
           
            
            pagesms.click("button[class='sc-iHGNWf hOfDeg']"); //Click on Import  
