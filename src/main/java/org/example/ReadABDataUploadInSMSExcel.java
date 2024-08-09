@@ -189,7 +189,7 @@ public class ReadABDataUploadInSMSExcel {
     System.out.println(_propertyName + "   :Starting in AB");
       page.navigate(_propReload);    
                  //alert banner notification
- //page.locator("xpath=/html/body/div[4]/div[1]/div/div[2]/p/a/i").click(); 
+// page.locator("xpath=/html/body/div[4]/div[1]/div/div[2]/p/a/i").click(); 
    //page.click("a[class='banner-close']");
       Thread.sleep(3000);
       // Add suburb to Poperty Address
@@ -384,17 +384,23 @@ public class ReadABDataUploadInSMSExcel {
          ///////////////////////////////     
          pagesms.navigate(_smsReloadUrl); 
         
-       pagesms.click("li[data-test='menu-contacts']");  //Go to Contacts            
+       pagesms.click("li[data-test='menu-contacts']");  //Go to Contacts     
+       Thread.sleep(2000);         
          pagesms.click("a[data-test='contact-groups-v2']");  //Go to Lists
+         Thread.sleep(2000);  
          pagesms.click("button:has-text(\"New list\")"); //Click on New List
          Thread.sleep(2000);  
-         pagesms.fill("input[class='sc-gplwa-d Knjej']", csvFilePropName ); //csvFilePropName   
+         //class="sc-izQBue fuLmof"
+         //pagesms.fill("input[class='sc-gplwa-d Knjej']", csvFilePropName ); //csvFilePropName   
+         pagesms.fill("input[class='sc-izQBue fuLmof']", csvFilePropName ); //csvFilePropName   
+         
          Thread.sleep(2000); 
          pagesms.click("button:has-text(\"Create list\")"); //Click on create list button
          Thread.sleep(2000); 
-         
-        pagesms.click("input[class='sc-gplwa-d kYLkcC']"); // Click on Search input 
-        pagesms.fill("input[class='sc-gplwa-d kYLkcC']",csvFilePropName ); //csvFilePropName  
+         //sc-gtJxfw hAoBpt
+         //sc-gplwa-d kYLkcC
+        pagesms.click("input[class='sc-izQBue flSDle']"); // Click on Search input 
+        pagesms.fill("input[class='sc-izQBue flSDle']",csvFilePropName ); //csvFilePropName  
         Thread.sleep(2000);  
         pagesms.keyboard().press("Enter"); 
         Thread.sleep(3000);  
@@ -406,10 +412,10 @@ public class ReadABDataUploadInSMSExcel {
          for (int i=0;i<pagesms.locator("tr").count();i++){ 
    
           if (tdsmsCGSearch.nth(i).innerText().equals(csvFilePropName)){  //csvFilePropName
-              tdsmsCGSearch.nth(i).click();
-             Thread.sleep(9000);             
-             
-             pagesms.click("button[class='sc-iHGNWf hOfDeg']"); //Click on Import sc-iHGNWf hOfDeg
+            Thread.sleep(4000); 
+            tdsmsCGSearch.nth(i).click();          
+            Thread.sleep(9000);         
+            pagesms.click("button[class='sc-iHGNWf hOfDeg']"); //Click on Import sc-iHGNWf hOfDeg
                                         
                   
             FileChooser fileChooser = pagesms.waitForFileChooser(() -> {
