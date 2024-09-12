@@ -173,7 +173,7 @@ public class ReadABDataUploadInSMSExcel {
                   
         else 
          System.out.println("Do Nothing");
-    
+
   
 
     if (_suburbGroup=="")
@@ -378,34 +378,36 @@ public class ReadABDataUploadInSMSExcel {
             e.printStackTrace();
         }
       
-        System.out.println(_propertyName + "   :DONE Creating Excel File");
+        System.out.println(_propertyName + "   :DONE Creating Excel File");          Thread.sleep(20000); 
    
       //SMS STart
          ///////////////////////////////     
-         pagesms.navigate(_smsReloadUrl); 
-        
-       pagesms.click("li[data-test='menu-contacts']");  //Go to Contacts     
-       Thread.sleep(2000);         
-         pagesms.click("a[data-test='contact-groups-v2']");  //Go to Lists
-         Thread.sleep(2000);  
-         pagesms.click("button:has-text(\"New list\")"); //Click on New List
-         Thread.sleep(2000);  
-         //class="sc-izQBue fuLmof"
-         //pagesms.fill("input[class='sc-gplwa-d Knjej']", csvFilePropName ); //csvFilePropName   
-         pagesms.fill("input[class='sc-izQBue fuLmof']", csvFilePropName ); //csvFilePropName   
-         
-         Thread.sleep(2000); 
-         pagesms.click("button:has-text(\"Create list\")"); //Click on create list button
-         Thread.sleep(2000); 
-         //sc-gtJxfw hAoBpt
-         //sc-gplwa-d kYLkcC
-        pagesms.click("input[class='sc-izQBue flSDle']"); // Click on Search input 
-        pagesms.fill("input[class='sc-izQBue flSDle']",csvFilePropName ); //csvFilePropName  
-        Thread.sleep(2000);  
-        pagesms.keyboard().press("Enter"); 
-        Thread.sleep(3000);  
+   //  pagesms.navigate(_smsReloadUrl); 
+
+      pagesms.click("a:has-text(\"Contacts\")"); 
+      Thread.sleep(2000); 
+
+      pagesms.click("p:has-text(\"Lists\")"); 
+      Thread.sleep(2000); 
       
-          
+      pagesms.click("button:has-text(\"New list\")");
+      Thread.sleep(2000); 
+
+      pagesms.fill("input[class='sc-izQBue fuLmof']", csvFilePropName ); 
+      Thread.sleep(2000); 
+                
+      pagesms.click("button:has-text(\"Create list\")"); //Click on create list button lass="sc-iHGNWf hOfDeg"
+      Thread.sleep(2000); 
+       
+      pagesms.click("input[class='sc-izQBue flSDle']"); // Click on Search input 
+      Thread.sleep(2000);
+      
+      pagesms.fill("input[class='sc-izQBue flSDle']",csvFilePropName ); //csvFilePropName  
+      Thread.sleep(2000);  
+      
+      pagesms.keyboard().press("Enter"); 
+      Thread.sleep(3000);     
+         
          
        com.microsoft.playwright.Locator tdsmsCGSearch=pagesms.locator("td");       
                
