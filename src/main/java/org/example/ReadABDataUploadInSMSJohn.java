@@ -7,14 +7,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Paths;
-
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFFont;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.BrowserType;
@@ -22,6 +14,7 @@ import com.microsoft.playwright.FileChooser;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import com.opencsv.exceptions.CsvValidationException;
+import org.apache.poi.xssf.usermodel.*;
 
 
 public class ReadABDataUploadInSMSJohn {
@@ -52,6 +45,7 @@ public class ReadABDataUploadInSMSJohn {
     String _propertyNameSuburbGroup="";
     String _suburbGroup="";
     String _ABOfficeUrl="";
+    String csvFilePropName="";
     boolean _headlessmodeAB = true;
     boolean _headlessmodeSMS = true;
 
@@ -141,18 +135,16 @@ public class ReadABDataUploadInSMSJohn {
       try (Playwright playwright = Playwright.create()) { 
 
         BrowserType chromium = playwright.chromium();
-        Browser browser =  chromium.launch(new BrowserType.LaunchOptions().setHeadless(_headlessmodeAB).setChannel("chrome").setTimeout(1200000).setExecutablePath(Paths.get("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe")));
+        Browser browser =  chromium.launch(new BrowserType.LaunchOptions().setHeadless(_headlessmodeAB).setChannel("chrome").setTimeout(1200000).setExecutablePath(Paths.get("")));//"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe")
         BrowserContext context = browser.newContext(); 
         Page  page  = browser.newPage();  
         page.route("**/*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());
     
-        Browser browserWNWH =  chromium.launch(new BrowserType.LaunchOptions().setHeadless(_headlessmodeAB).setChannel("chrome").setTimeout(1200000).setExecutablePath(Paths.get("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe")));
-        BrowserContext contextWNWH = browserWNWH.newContext();  
-        
-        chromium.launch(new BrowserType.LaunchOptions().setHeadless(_headlessmodeAB).setChannel("chrome").setTimeout(1200000).setExecutablePath(Paths.get("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe")));
-        BrowserContext contextJohn = browserWNWH.newContext();  
-
-       
+        Browser browserWNWH =  chromium.launch(new BrowserType.LaunchOptions().setHeadless(_headlessmodeAB).setChannel("chrome").setTimeout(1200000).setExecutablePath(Paths.get("")));//C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe
+        BrowserContext contextWNWH = browserWNWH.newContext();    
+        BrowserContext contextJohn = browserWNWH.newContext();          
+            
+            
         Page pageWNWHPage = contextWNWH.newPage(); 
         pageWNWHPage.route("**/*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());
 
@@ -162,6 +154,7 @@ public class ReadABDataUploadInSMSJohn {
         //For Tariq
 
         pageWNWHPage.navigate(_propReloadUrlWNWH);  
+        Thread.sleep(3000);
         pageWNWHPage.click("text=Login"); // Interact with login form ptovide Username & Password
         pageWNWHPage.fill("input[name='_username']", _propUsernameWNWH);
         pageWNWHPage.fill("input[name='_password']", _propPasswordWNWH);
@@ -181,12 +174,9 @@ public class ReadABDataUploadInSMSJohn {
         BrowserContext context1 = firefox.launchPersistentContext(Paths.get(""),
           new BrowserType.LaunchPersistentContextOptions()
             .setTimeout(60000).setHeadless(_headlessmodeSMS)
-            .setIgnoreHTTPSErrors(true)  );
-
-      /*      BrowserContext contextCompany = firefox.launchPersistentContext(Paths.get(""),
-            new BrowserType.LaunchPersistentContextOptions()
-              .setTimeout(60000).setHeadless(false)
-              .setIgnoreHTTPSErrors(true)  ); */
+            .setIgnoreHTTPSErrors(true) 
+            .setBaseURL(_smsUrl) );
+          
 
          Page pagesms = context1.newPage();
          pagesms.route("**/*.{png,jpg,jpeg,svg,fli,flc}", route -> route.abort());
@@ -241,7 +231,7 @@ public class ReadABDataUploadInSMSJohn {
     
   
     
-     String csvFilePropName;
+
 
     if (_suburbGroup=="")
      csvFilePropName= (_propertyName.replace("/","-")+" - "+_typeOfAddress+" - "+_typeofBuyers+" - "+((String) (java.time.LocalDate.now()+"-"+java.time.LocalTime.now()).subSequence(0, 19)).replace(":","-"));   
@@ -251,13 +241,13 @@ public class ReadABDataUploadInSMSJohn {
     if (_ABOfficeUrl.equalsIgnoreCase("JOHN"))
         csvFilePropName="JOHN-ForSale "+csvFilePropName; 
     
-        String csvFileName = _destinationCSVFolder+csvFilePropName+".csv";
-        String xlsxFileName = _destinationCSVFolder+csvFilePropName+".xlsx";  
-        System.out.println(_propertyName + "   :Starting in AB");
-       page.navigate(_propReload); 
-     //alert banner notification
-   //page.locator("xpath=/html/body/div[4]/div[1]/div/div[2]/p/a/i").click(); -older
-     // page.click("a[class='banner-close']");
+    String csvFileName = _destinationCSVFolder+csvFilePropName+".csv";
+    String xlsxFileName = _destinationCSVFolder+csvFilePropName+".xlsx";  
+    System.out.println(_suburbGroup + " " + _propertyName+ " " + _typeOfAddress+ " " + _typeofBuyers);
+      page.navigate(_propReload);    
+                 //alert banner notification
+// page.locator("xpath=/html/body/div[4]/div[1]/div/div[2]/p/a/i").click(); 
+   //page.click("a[class='banner-close']");
       Thread.sleep(3000);
       // Add suburb to Poperty Address
       _propertyNameSuburbGroup = _propertyName + ", " + _suburbGroup;
@@ -351,7 +341,7 @@ public class ReadABDataUploadInSMSJohn {
        
        FileWriter pw = new FileWriter(csvFileName);
        StringBuilder builder = new StringBuilder();      
-       String headerList = "FirstName,Address,Number,Email,Home,Work,emailSubscription";                
+       String headerList = "FirstName,Location,Number,Email,Home,Work,emailSubscription";                
        builder.append(headerList +"\n");
        String   records;
 
@@ -461,63 +451,72 @@ public class ReadABDataUploadInSMSJohn {
             e.printStackTrace();
         }
       
-        System.out.println(_propertyName + "   :DONE Creating Excel File");
-     //SMS STart
+        System.out.println("DONE Creating Excel File");          Thread.sleep(20000); 
+   
+      //SMS STart
          ///////////////////////////////     
-         pagesms.navigate(_smsReloadUrl); 
-        
-       pagesms.click("li[data-test='menu-contacts']");  //Go to Contacts            
-         pagesms.click("a[data-test='contact-groups-v2']");  //Go to Lists
-         pagesms.click("button:has-text(\"New list\")"); //Click on New List
-         Thread.sleep(2000);  
-         pagesms.fill("input[class='sc-gplwa-d Knjej']", csvFilePropName ); //csvFilePropName   
-         Thread.sleep(2000); 
-         pagesms.click("button:has-text(\"Create list\")"); //Click on create list button
-         Thread.sleep(2000); 
-         
-        pagesms.click("input[class='sc-gplwa-d kYLkcC']"); // Click on Search input 
-        pagesms.fill("input[class='sc-gplwa-d kYLkcC']",csvFilePropName ); //csvFilePropName  
-        Thread.sleep(2000);  
-        pagesms.keyboard().press("Enter"); 
-        Thread.sleep(3000);  
+   //  pagesms.navigate(_smsReloadUrl); 
+      Thread.sleep(8000); 
+      pagesms.click("a:has-text(\"Contacts\")"); 
+      Thread.sleep(2000); 
+
+      pagesms.click("p:has-text(\"Lists\")"); 
+      Thread.sleep(2000); 
       
-          
+      pagesms.click("button:has-text(\"New list\")");
+      Thread.sleep(2000); 
+
+      pagesms.fill("input[class='sc-izQBue fuLmof']", csvFilePropName ); 
+      Thread.sleep(2000); 
+                
+      pagesms.click("button:has-text(\"Create list\")"); //Click on create list button lass="sc-iHGNWf hOfDeg"
+      Thread.sleep(2000); 
+       
+      pagesms.click("input[class='sc-izQBue flSDle']"); // Click on Search input 
+      Thread.sleep(2000);
+      
+      pagesms.fill("input[class='sc-izQBue flSDle']",csvFilePropName ); //csvFilePropName  
+      Thread.sleep(2000);  
+      
+      pagesms.keyboard().press("Enter"); 
+      Thread.sleep(3000);     
+         
          
        com.microsoft.playwright.Locator tdsmsCGSearch=pagesms.locator("td");       
             
       for (int i=0;i<pagesms.locator("tr").count();i++){ 
    
-        if (tdsmsCGSearch.nth(i).innerText().equals(csvFilePropName)){  //csvFilePropName
-            tdsmsCGSearch.nth(i).click();
-           Thread.sleep(9000);             
+          if (tdsmsCGSearch.nth(i).innerText().equals(csvFilePropName)){  //csvFilePropName
+            Thread.sleep(4000); 
+            tdsmsCGSearch.nth(i).click();          
+            Thread.sleep(9000);         
+            pagesms.click("button[class='sc-iHGNWf hOfDeg']"); //Click on Import sc-iHGNWf hOfDeg
+                                        
+                  
+            FileChooser fileChooser = pagesms.waitForFileChooser(() -> {
+             pagesms.click("button:has-text(\"Browse\")"); //Click on Browse
+            });
            
-           pagesms.click("button[class='sc-iHGNWf hOfDeg']"); //Click on Import sc-iHGNWf hOfDeg
-                                      
-                
-          FileChooser fileChooser = pagesms.waitForFileChooser(() -> {
-           pagesms.click("button:has-text(\"Browse\")"); //Click on Browse
-          });
-         
-         fileChooser.setFiles(Paths.get(xlsxFileName));
-             
-         Thread.sleep(9000);
+           fileChooser.setFiles(Paths.get(xlsxFileName));
+               
+           Thread.sleep(9000);
+          
+           
+           pagesms.click("button[class='sc-iHGNWf hOfDeg']"); //Click on Import  
+          
+           Thread.sleep(2000);
+           pagesms.click("button:has-text(\"Import contacts\")");
+           System.out.println("DONE Uploading in SMS\n________________________________________________________");
+           Thread.sleep(2000);
+          }
+        }     
+         }
         
-         
-         pagesms.click("button[class='sc-iHGNWf hOfDeg']"); //Click on Import  
-        
-         Thread.sleep(2000);
-         pagesms.click("button:has-text(\"Import contacts\")");
-         System.out.println(_suburbGroup + "   :DONE Uploading in SMS\n________________________________________________________");
-         Thread.sleep(2000);
-        }
-      }     
-      //////////////////////////////////// 
-   // SMS End*/ 
+      // SMS End*/ 
       
     }  
     //Playwright Try Ends here 
     }  
-   } 
    
   //}
   
