@@ -153,7 +153,7 @@ public class ReadABDataUploadInSMSJohn {
 
         //For Tariq
 
-        pageWNWHPage.navigate(_propReloadUrlWNWH);  
+        pageWNWHPage.navigate(_propUrlWNWH);  
         Thread.sleep(3000);
         pageWNWHPage.click("text=Login"); // Interact with login form ptovide Username & Password
         pageWNWHPage.fill("input[name='_username']", _propUsernameWNWH);
@@ -466,16 +466,16 @@ public class ReadABDataUploadInSMSJohn {
       pagesms.click("button:has-text(\"New list\")");
       Thread.sleep(2000); 
 
-      pagesms.fill("input[class='sc-izQBue fuLmof']", csvFilePropName ); 
+      pagesms.fill("input[class='sc-jBeBSR kJHDhN']", csvFilePropName ); //  sc-izQBue fuLmof
       Thread.sleep(2000); 
                 
       pagesms.click("button:has-text(\"Create list\")"); //Click on create list button lass="sc-iHGNWf hOfDeg"
       Thread.sleep(2000); 
        
-      pagesms.click("input[class='sc-izQBue flSDle']"); // Click on Search input 
+      pagesms.click("input[class='sc-jBeBSR ciSUcM']"); // Click on Search input    sc-izQBue flSDle
       Thread.sleep(2000);
       
-      pagesms.fill("input[class='sc-izQBue flSDle']",csvFilePropName ); //csvFilePropName  
+      pagesms.fill("input[class='sc-jBeBSR ciSUcM']",csvFilePropName ); //csvFilePropName  
       Thread.sleep(2000);  
       
       pagesms.keyboard().press("Enter"); 
