@@ -37,8 +37,9 @@ public class ReadABDataUploadInSMS {
     String _propertyNameSuburbGroup="";
     String _suburbGroup="";
     String _ABOfficeUrl="";
+    String _propUrlWNWH ="";
     String csvFilePropName="";
-    boolean _headlessmodeAB = true;
+    boolean _headlessmodeAB = false;
     boolean _headlessmodeSMS = true;
 
   try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(_credsCsv), "UTF8"))) {
@@ -47,7 +48,11 @@ public class ReadABDataUploadInSMS {
       while ((tempStr=reader.readLine()) != null) {
              lineInArray = tempStr.split(",");	  
 	     switch (lineInArray[0]) {	 
-          
+
+          case "_propUrlWNWH":
+           _propUrlWNWH=lineInArray[1];
+           break;
+
         case "_propUsernameWNWH":
           _propUsernameWNWH=lineInArray[1];
           break;
@@ -109,12 +114,15 @@ public class ReadABDataUploadInSMS {
 
        //For Tariq
 
-        pageWNWHPage.navigate(_propReloadUrlWNWH);  
+        pageWNWHPage.navigate(_propUrlWNWH);  
         Thread.sleep(3000);
-        pageWNWHPage.click("text=Login"); // Interact with login form ptovide Username & Password
-        pageWNWHPage.fill("input[name='_username']", _propUsernameWNWH);
-        pageWNWHPage.fill("input[name='_password']", _propPasswordWNWH);
-        pageWNWHPage.click("input[value='Login']");
+        pageWNWHPage.locator("div[class='container']").click();
+        pageWNWHPage.locator("input[name='username']").nth(1).click();
+        pageWNWHPage.locator("input[name='username']").nth(1).fill(_propUsernameWNWH);
+        pageWNWHPage.locator("input[name='password']").nth(1).fill(_propPasswordWNWH);
+        pageWNWHPage.locator("input[name='signInSubmitButton']").nth(1).click();
+
+       
         pageWNWHPage.waitForLoadState();
 
    
