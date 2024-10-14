@@ -39,7 +39,7 @@ public class ReadABDataUploadInSMS {
     String _ABOfficeUrl="";
     String _propUrlWNWH ="";
     String csvFilePropName="";
-    boolean _headlessmodeAB = false;
+    boolean _headlessmodeAB = true;
     boolean _headlessmodeSMS = true;
 
   try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(_credsCsv), "UTF8"))) {
